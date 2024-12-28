@@ -61,12 +61,14 @@ function plot_it(λ::Vector{Float64},
     return plot(λ, y, title = Title, xlabel = "λ (nm)", ylabel = "Intensity (arb.)")
 end
 
-function pressure(λ::Float64)::Float64
+function pressure(λ::Float64
+                  )::Float64
     A = 1904.0
     B = 7.665
     λ₀ = 693.29427
     return A / B * (((λ - λ₀) / λ₀ + 1)^B - 1)
 end
+
 
 df = DataFrame(CSV.File("6.6GPa-b.csv"))
 λ = df[!, 1];

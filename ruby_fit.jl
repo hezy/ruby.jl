@@ -1,7 +1,7 @@
 using CSV, DataFrames, Plots, LsqFit, Random
 
 
-function Gaussian(x::Vector{Float64},
+function gaussian(x::Vector{Float64},
                   fwhm::Float64
                   )::Vector{Float64}
     σ = fwhm / (2√(2log(2)))
@@ -9,7 +9,7 @@ function Gaussian(x::Vector{Float64},
 end
 
 
-function Lorentzian(x::Vector{Float64},
+function lorentzian(x::Vector{Float64},
                     fwhm::Float64
                     )::Vector{Float64}
     γ = fwhm / 2
@@ -17,11 +17,11 @@ function Lorentzian(x::Vector{Float64},
 end
 
 
-function Pseudo_Voigt(x::Vector{Float64},
-                      fwhm::Float64),
-                      n:Float64
+function pseudo_voigt(x::Vector{Float64},
+                      fwhm::Float64,
+                      n::Float64
                       )::Vector{Float64}
-    return n * Lorentzian(x, fwhm) + (1 - n) * Gaussian(x, fwhm)
+    return n * lorentzian(x, fwhm) + (1 - n) * gaussian(x, fwhm)
 end
 
 
@@ -31,7 +31,7 @@ function peak(λ::Vector{Float64},
               n::Float64,
               A::Float64
               )::Vector{Float64}
-    return @. A * Pseudo_Voigt(λ - λ₀, w, n)
+    return @. A * pseudo_voigt(λ - λ₀, w, n)
 end
 
 
@@ -61,12 +61,14 @@ function plot_it(λ::Vector{Float64},
     return plot(λ, y, title = Title, xlabel = "λ (nm)", ylabel = "Intensity (arb.)")
 end
 
-function pressure(λ::Float64)::Float64
+function pressure(λ::Float64
+                  )::Float64
     A = 1904.0
     B = 7.665
     λ₀ = 693.29427
     return A / B * (((λ - λ₀) / λ₀ + 1)^B - 1)
 end
+
 
 df = DataFrame(CSV.File("6.6GPa-b.csv"))
 λ = df[!, 1];
